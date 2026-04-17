@@ -32,10 +32,10 @@ Then visit <http://localhost:8000>.
 
 ## Reflection
 
-#### **Where AI saved time.** 
+#### 1. **Where AI saved time.** 
 Scaffolding the tricky plumbing — accessible modal with focus trap, 3D CSS flip, `storage.js` with version check + safe parse, and the two seed decks (LLM & AI, Neuro Engineering). Minutes of directed generation instead of hours of hand-coding.
 
-#### **AI bug I caught and fixed.** 
+#### 2. **AI bug I caught and fixed.** 
 - **Issue**: Added a new "LLM & AI Concepts" seed deck to `SEED_DECKS`, but after closing and re-opening `index.html` the new deck still didn't appear in the browser. 
 
 - **Root cause**: `hydrateFromStorage` was unconditionally replacing `state.decks` with whatever was in `localStorage` — and that snapshot, saved before I added d4, contained only `[d1, d2, d3]`, so d4 from `SEED_DECKS` was discarded on every load.
@@ -50,9 +50,29 @@ After the fix, on the next reload with a pre-existing localStorage (decks d1–d
 
 Going forward, any new seed deck I add to `SEED_DECKS` auto-appears on the next page load. Decks the user deletes aren't resurrected — their id stays in `seededIds`.
 
-#### **One accessibility improvement.** 
+#### 3. **A code snippet I refactored for clarity.** 
+While fixing the seed-merge bug, I pulled the seed data out of the `state` object literal into a top-level constant plus a small `cloneDeck` helper:
+
+```js
+function cloneDeck(deck) {
+    return {
+        id: deck.id,
+        name: deck.name,
+        cards: deck.cards.map((c) => ({ id: c.id, front: c.front, back: c.back })),
+    };
+}
+
+const state = {
+    decks: SEED_DECKS.map(cloneDeck),
+    // ...
+};
+```
+
+Before, the seed data and the live mutable state were the same object literal — mutating a deck's cards would also mutate the "template." After, `SEED_DECKS` is a readonly source of truth and `cloneDeck` hands out a fresh deep copy whenever hydrate needs to add a missing seed. The merge logic collapsed to a 6-line loop instead of being tangled into state initialization.
+
+#### 4. **One accessibility improvement.** 
 The study flashcard was originally a `<div tabindex="0">` with no name. 
 I converted it to `<button aria-pressed>` with a dynamic `aria-label` that announces position + visible face + text — *"Card 3 of 15, front: Hola. Activate to flip."* — and toggle `aria-hidden` on the non-visible face so screen readers only see the side currently showing.
 
-#### **Prompt changes that improved AI output.** 
+#### 5. **Prompt changes that improved AI output.** 
 Framing each step as a three-part audit — **Completion check** → **AI inconsistency watch** → **Quality checks** — forced the model to self-audit against a checklist instead of declaring "done" after writing the code. That pattern caught the missing shuffle handler, the focus-trap asymmetry (only `Shift+Tab` recovered when focus escaped), and the silently-failing whitespace edits. Specifying concrete edge cases (case-sensitive search, trim behavior) also prevented lazy defaults.
