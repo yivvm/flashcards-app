@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flashcards</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header class="app-header">
+        <h1>Flashcards</h1>
+        <button type="button" class="btn btn-primary" id="new-deck" data-modal-open="new-deck-modal">+ New Deck</button>
+    </header>
+
+    <div class="layout">
+        <aside class="sidebar" aria-label="Decks">
+            <nav>
+                <h2>Decks</h2>
+                <ul class="deck-list" id="deck-list" role="list"></ul>
+                <div id="deck-empty" hidden></div>
+            </nav>
+        </aside>
+
+        <main class="main">
+            <section class="cards" aria-labelledby="deck-title">
+                <header class="cards-header">
+                    <h2 id="deck-title" aria-live="polite">Spanish Basics</h2>
+                    <div class="toolbar" role="group" aria-label="Deck actions">
+                        <label class="search">
+                            <span class="visually-hidden">Search cards</span>
+                            <input type="search" placeholder="Search cards…" id="search">
+                        </label>
+                        <button type="button" class="btn" id="shuffle">Shuffle</button>
+                        <button type="button" class="btn" id="study-toggle" aria-pressed="false">Study</button>
+                        <button type="button" class="btn btn-primary" id="new-card">+ New Card</button>
+                    </div>
+                </header>
+
+                <div class="card-area">
+                    <button type="button" class="flashcard" id="flashcard" aria-label="Flip card" aria-pressed="false">
+                        <span class="flashcard-inner">
+                            <span class="flashcard-face flashcard-front" aria-hidden="false">
+                                <span class="flashcard-label" aria-hidden="true">Front</span>
+                                <span class="flashcard-text">Hola</span>
+                            </span>
+                            <span class="flashcard-face flashcard-back" aria-hidden="true">
+                                <span class="flashcard-label" aria-hidden="true">Back</span>
+                                <span class="flashcard-text">Hello</span>
+                            </span>
+                        </span>
+                    </button>
+                </div>
+
+                <div class="controls" role="group" aria-label="Card navigation">
+                    <button type="button" class="btn" id="prev" aria-label="Previous card">&larr; Prev</button>
+                    <button type="button" class="btn btn-primary" id="flip">Flip</button>
+                    <button type="button" class="btn" id="next" aria-label="Next card">Next &rarr;</button>
+                </div>
+
+                <p class="cards-status" id="cards-status" role="status" aria-live="polite"></p>
+                <div class="cards-grid" id="cards-grid" aria-label="Cards in deck"></div>
+            </section>
+        </main>
+    </div>
+
+    <div id="card-modal" class="modal-backdrop" data-modal hidden aria-hidden="true">
+        <div class="modal" role="dialog" aria-modal="true" aria-labelledby="cm-title">
+            <h2 id="cm-title" class="modal-title">New card</h2>
+            <form id="card-form" class="modal-body">
+                <input type="hidden" name="id">
+                <label for="cm-front">Front</label>
+                <textarea id="cm-front" name="front" required rows="2" maxlength="500"></textarea>
+                <label for="cm-back">Back</label>
+                <textarea id="cm-back" name="back" required rows="2" maxlength="500"></textarea>
+                <div class="modal-actions">
+                    <button type="button" class="btn" data-modal-close>Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="new-deck-modal" class="modal-backdrop" data-modal hidden aria-hidden="true">
+        <div class="modal" role="dialog" aria-modal="true" aria-labelledby="ndm-title">
+            <h2 id="ndm-title" class="modal-title">Create new deck</h2>
+            <form id="new-deck-form" class="modal-body">
+                <label for="ndm-name">Deck name</label>
+                <input type="text" id="ndm-name" name="name" required maxlength="80" autocomplete="off">
+                <div class="modal-actions">
+                    <button type="button" class="btn" data-modal-close>Cancel</button>
+                    <button type="submit" class="btn btn-primary">Create</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <footer class="app-footer">
+        <p>Press <kbd>Space</kbd> to flip &middot; <kbd>&larr;</kbd>/<kbd>&rarr;</kbd> to navigate &middot; <kbd>N</kbd> for new card</p>
+    </footer>
+
+    <script src="storage.js" defer></script>
+    <script src="app.js" defer></script>
+</body>
+</html>
